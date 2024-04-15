@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  kibana:
+    image: arm64v8/kibana:7.13.1
+    container_name: kibana
+    restart: always
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es:9200
+    networks:
+      - es-net
+    ports:
+      - 5601:5601
+  elasticsearch:
+    image: elasticsearch:7.13.1
+    container_name: es
+    restart: always
+    environment:
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - discovery.type=single-node
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+      - es-plugins:/usr/share/elasticsearch/plugins
+    privileged: true
+    networks:
+      - es-net
+    ports:
+      - 9200:9200
+
+networks:
+  es-net:
+
+volumes:
+  es-data:
+  es-plugins:
